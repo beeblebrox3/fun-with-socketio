@@ -1,12 +1,12 @@
-const express = require("express");
-const http = require("http");
-const socketio = require("socket.io");
+var express = require("express");
+var http = require("http");
+var socketio = require("socket.io");
 
-const app = express();
-const server = http.Server(app);
-const io = socketio(server);
+var app = express();
+var server = http.Server(app);
+var io = socketio(server);
 
-let connectedUsers = 0;
+var connectedUsers = 0;
 
 app.get("/", (req, res) => {
     res.sendFile(__dirname + "/views/index.html");
