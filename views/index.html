@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>chat</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <style>
+        .messages {
+            max-height: 400px;
+            overflow: auto;
+            border: 1px solid #ddd;
+            list-style: none;
+            padding: 0;
+        }
+
+        .messages li {
+            display: block;
+            padding: 3px;
+        }
+
+        .messages li:nth-child(odd) {
+            background: #fca;
+        }
+
+        .messages .system-message {
+            background: mediumspringgreen !important;
+        }
+    </style>
+    <h1>Chat</h1>
+
+    <form action="">
+        <input type="text" placeholder="type your mmessage" autofocus />
+        <button type="submit">send</button>
+    </form>
+
+    <ul class="messages">
+        <li class="system-message">Welcome!</li>
+    </ul>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var socket = io();
+
+        var form = document.querySelector("form");
+        var input = document.querySelector("input");
+        var chatArea = document.querySelector(".messages");
+        var connectedUsers = 0;
+
+        var addMessage = function (message, system = false) {
+            var DOM = document.createElement("li");
+            if (system === true) {
+                DOM.classList.add("system-message");
+            }
+            DOM.innerHTML = message;
+            chatArea.insertBefore(DOM, chatArea.firstChild);
+        };
+
+        form.addEventListener("submit", function (e) {
+            e.preventDefault();
+            socket.emit("chat message", input.value);
+            input.value = "";
+        });
+
+        socket.on("chat message", (message) => addMessage(message));
+        socket.on("user connected", (counter) => addMessage("current users: " + counter, true));
+        socket.on("user disconnected", (counter) => addMessage("current users: " + counter, true));
+        socket.on("clear", () => chatArea.innerHTML = "");
+        socket.on("count users", (counter) => addMessage("current users: " + counter, true));
+    </script>
+</body>
+</html>
